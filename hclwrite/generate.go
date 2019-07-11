@@ -203,6 +203,7 @@ func escapeQuotedStringLit(s string) []byte {
 		return nil
 	}
 	buf := make([]byte, 0, len(s))
+	isInterpollarEscaped := false
 	for i, r := range s {
 		switch r {
 		case '\n':
@@ -216,11 +217,21 @@ func escapeQuotedStringLit(s string) []byte {
 		case '\\':
 			buf = append(buf, '\\', '\\')
 		case '$', '%':
+			if isInterpollarEscaped {
+				continue
+			}
+
 			buf = appendRune(buf, r)
 			remain := s[i+1:]
-			if len(remain) > 0 && remain[0] == '{' {
-				// Double up our template introducer symbol to escape it.
-				buf = appendRune(buf, r)
+			if len(remain) > 0 {
+				if remain[0] == '$' || remain[0] == '%' {
+					isInterpollarEscaped = true
+					continue
+				}
+
+				if remain[0] == '{' {
+					buf = appendRune(buf, r)
+				}
 			}
 		default:
 			if !unicode.IsPrint(r) {
