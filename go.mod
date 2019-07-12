@@ -1,6 +1,6 @@
 // WARNING: This module will move to a new path when it transitions from
 // being "experimental" to being released.
-module github.com/hashicorp/hcl2
+module github.com/mcuadros/hcl2
 
 require (
 	github.com/agext/levenshtein v1.2.1
